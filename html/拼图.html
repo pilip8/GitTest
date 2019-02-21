@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JS</title>
+    <script src="js/jquery-3.3.1.js"></script>
+
+
+    <style type="text/css">
+
+        * {
+            margin: 0px;
+            padding: 0px;
+        }
+
+        #box {
+            width: 600px;
+            height: 600px;
+        }
+
+        #box div {
+            height: 200px;
+            margin: 0px;
+            padding: 0px;
+        }
+
+        #box div div {
+            float: left;
+        }
+
+        img {
+            box-sizing: border-box;
+        }
+
+
+    </style>
+
+</head>
+<body>
+
+<DIV id="box">
+
+    <DIV id="row01">
+        <DIV><IMG src="imgs/ori_1.jpg" width="200" height="200"/></DIV>
+        <DIV><IMG src="imgs/ori_2.jpg" width="200" height="200"/></DIV>
+        <DIV><IMG src="imgs/ori_3.jpg" width="200" height="200"/></DIV>
+    </DIV>
+
+    <DIV id="row02">
+        <DIV><IMG src="imgs/ori_4.jpg" width="200" height="200"/></DIV>
+        <DIV><IMG src="imgs/ori_5.jpg" width="200" height="200"/></DIV>
+        <DIV><IMG src="imgs/ori_6.jpg" width="200" height="200"/></DIV>
+    </DIV>
+
+    <DIV id="row03">
+        <DIV><IMG src="imgs/ori_7.jpg" width="200" height="200"/></DIV>
+        <DIV><IMG src="imgs/ori_8.jpg" width="200" height="200"/></DIV>
+        <DIV><IMG src="imgs/ori_9.jpg" width="200" height="200"/></DIV>
+    </DIV>
+
+</DIV>
+
+<input type="button" value="测试" onclick="fun()">
+<input type="button" value="开始" onclick="startGame()">
+<input type="button" value="效果" onclick="startEffect()">
+
+
+<script>
+
+    // 图片路径数组
+    var imgsPath = [
+        "imgs/ori_1.jpg",
+        "imgs/ori_2.jpg",
+        "imgs/ori_3.jpg",
+        "imgs/ori_4.jpg",
+        "imgs/ori_5.jpg",
+        "imgs/ori_6.jpg",
+        "imgs/ori_7.jpg",
+        "imgs/ori_8.jpg",
+        "imgs/ori_9.jpg"
+    ];
+
+    // 备份的路径
+    var backupPath = [
+        "imgs/ori_1.jpg",
+        "imgs/ori_2.jpg",
+        "imgs/ori_3.jpg",
+        "imgs/ori_4.jpg",
+        "imgs/ori_5.jpg",
+        "imgs/ori_6.jpg",
+        "imgs/ori_7.jpg",
+        "imgs/ori_8.jpg",
+        "imgs/ori_9.jpg"
+    ];
+
+
+    function fun() {
+        var arr = shuffle(imgsPath);
+        alert(arr.toString());
+    }
+
+
+    // 打乱数组的方法
+    function shuffle(array) {
+        // i = 9    随机数范围0~8
+        // i = 8    随机数范围0~7
+        for (var i = array.length; i > 1; i--) {
+            var num = Math.floor(Math.random() * i);
+            var lastIndex = i - 1;
+            if (num != lastIndex) {
+                var tem = array[num];
+                array[num] = array[lastIndex];
+                array[lastIndex] = tem;
+            }
+        }
+        return array;
+    }
+
+    function startGame() {
+        var arr = shuffle(imgsPath);
+        var imgs = $("img");
+        for (var i = 0; i < imgs.length; i++) {
+            imgs.eq(i).attr("src", arr[i]);
+        }
+        //
+        imgs.on("click", imgClick);
+    }
+
+    var mark = null;  // 用来记录上一次点击的图片
+
+    // border:
+    function imgClick() {
+        if (mark == null) {
+            mark = this;
+            $(mark).css({border: "yellow 10px solid"});
+        } else {
+            if (mark == this) {
+                return;
+            }
+            // 交换两张图片的位置
+            var imgP1 = $(mark).attr("src");
+            var imgP2 = $(this).attr("src");
+            $(mark).attr("src", imgP2);
+            $(this).attr("src", imgP1);
+            $(mark).css({border: ""});
+            mark = null; // 清空记录的位置
+            setTimeout("judgeGameover()", 100);
+        }
+    }
+
+    // 判断游戏结束
+    function judgeGameover() {
+        var imgs = $("img");
+        var result = true;
+        for (var i = 0; i < backupPath.length; i++) {
+            var str = imgs.eq(i).attr("src");
+            var str2 = backupPath[i];
+            if (str.indexOf(str2) < 0) {
+                result = false;
+                break;
+            }
+        }
+        if (result) {
+            // alert("拼图完成");
+            startEffect();
+            $("img").off("click");
+        }
+    }
+
+    // 效果
+    function startEffect() {
+        $("img").animate({width: "0px", height: "0px", opacity: 0, 'margin-left': "100px", 'margin-top': "100px"}, 200)
+            .animate({width: "200px", height: "200px", opacity: 1, 'margin-left': "0px", 'margin-top': "0px"}, 200);
+    }
+
+</script>
+
+
+</body>
+</html>
